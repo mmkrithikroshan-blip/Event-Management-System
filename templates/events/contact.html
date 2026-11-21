@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - EventHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row g-5">
+    <div class="col-lg-5">
+      <span class="badge bg-primary rounded-pill px-3 py-2 mb-2">Get In Touch</span>
+      <h2 class="fw-bold mb-3" style="color: #0f172a;">We're Here to Help</h2>
+      <p class="text-secondary mb-4">
+        Have questions regarding an upcoming concert, booking queries, refund statuses, or organizer partnerships? Drop us a line.
+      </p>
+
+      <div class="d-flex flex-column gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+          <div class="feature-pill-icon text-primary"><i class="bi bi-geo-alt-fill"></i></div>
+          <div>
+            <div class="fw-bold">Headquarters</div>
+            <div class="text-secondary small">Chennai Trade Tower, Guindy, Chennai, TN - 600032</div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="feature-pill-icon text-primary"><i class="bi bi-envelope-fill"></i></div>
+          <div>
+            <div class="fw-bold">Support Email</div>
+            <div class="text-secondary small">{{ CONTACT_EMAIL }}</div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="feature-pill-icon text-primary"><i class="bi bi-telephone-fill"></i></div>
+          <div>
+            <div class="fw-bold">Helpline</div>
+            <div class="text-secondary small">{{ CONTACT_PHONE }} (9:00 AM - 8:00 PM IST)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+        <h4 class="fw-bold mb-3">Send Us a Message</h4>
+        
+        <form method="POST">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-secondary">Your Name</label>
+              {{ form.name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-secondary">Email Address</label>
+              {{ form.email }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold text-secondary">Subject</label>
+              {{ form.subject }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold text-secondary">Message</label>
+              {{ form.message }}
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-pill-primary px-5 py-2">
+                Send Message <i class="bi bi-send ms-1"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

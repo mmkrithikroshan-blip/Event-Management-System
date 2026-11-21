@@ -1,0 +1,72 @@
+<footer class="footer-eventhub">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-lg-4 col-md-6">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="brand-icon"><i class="bi bi-ticket-perforated-fill"></i></span>
+          <span class="fs-4 fw-bold text-white">EventHub</span>
+        </div>
+        <p class="text-secondary small pe-lg-4">
+          The premier platform to discover, book, and enjoy concerts, tech summits, sports championships, and cultural festivals with instant QR-coded tickets and seamless Razorpay online payments.
+        </p>
+        <div class="d-flex gap-3 text-secondary fs-5 mt-3">
+          <a href="#" class="text-secondary"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="text-secondary"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="text-secondary"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="text-secondary"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-md-3 col-6">
+        <h5>Quick Links</h5>
+        <ul class="list-unstyled small d-flex flex-column gap-2">
+          <li><a href="{% url 'events:home' %}">Home</a></li>
+          <li><a href="{% url 'events:event_list' %}">Browse Events</a></li>
+          <li><a href="{% url 'events:about' %}">About Us</a></li>
+          <li><a href="{% url 'events:contact' %}">Contact Support</a></li>
+          <li><a href="{% url 'bookings:my_bookings' %}">My Bookings</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-2 col-md-3 col-6">
+        <h5>Popular Cities</h5>
+        <ul class="list-unstyled small d-flex flex-column gap-2">
+          <li><a href="{% url 'events:event_list' %}?city=Chennai">Chennai</a></li>
+          <li><a href="{% url 'events:event_list' %}?city=Bengaluru">Bengaluru</a></li>
+          <li><a href="{% url 'events:event_list' %}?city=Mumbai">Mumbai</a></li>
+          <li><a href="{% url 'events:event_list' %}?city=Delhi">Delhi NCR</a></li>
+          <li><a href="{% url 'events:event_list' %}?city=Hyderabad">Hyderabad</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4 col-md-12">
+        <h5>Security & Technology</h5>
+        <p class="text-secondary small">
+          Built with Python (Django), HTML5, CSS3, JavaScript, MySQL, and verified 256-bit Razorpay Payment Gateway integration.
+        </p>
+        <div class="d-flex flex-wrap gap-2 mt-2">
+          <span class="badge bg-dark border border-secondary px-3 py-2 text-secondary">
+            <i class="bi bi-shield-check text-success me-1"></i> Razorpay Verified
+          </span>
+          <span class="badge bg-dark border border-secondary px-3 py-2 text-secondary">
+            <i class="bi bi-qr-code text-primary me-1"></i> QR Gate Scanning
+          </span>
+          <span class="badge bg-dark border border-secondary px-3 py-2 text-secondary">
+            <i class="bi bi-file-earmark-pdf text-danger me-1"></i> PDF E-Tickets
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="border-secondary opacity-25 my-4">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
+      <div>&copy; 2026 EventHub. All rights reserved. Book &bull; Enjoy &bull; Experience.</div>
+      <div class="d-flex gap-3 mt-3 mt-md-0">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cancellation & Refund Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>

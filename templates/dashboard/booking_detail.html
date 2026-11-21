@@ -1,0 +1,123 @@
+{% extends 'dashboard/admin_base.html' %}
+
+{% block title %}Booking #{{ booking.booking_id }} - EventHub Admin{% endblock %}
+{% block header_title %}Booking #{{ booking.booking_id }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Booking Info Left Column -->
+  <div class="col-lg-8">
+    <div class="admin-card mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-white mb-0">Booking Information</h5>
+        {% if booking.status == 'confirmed' %}
+          <span class="badge-paid">Paid</span>
+        {% elif booking.status == 'pending' %}
+          <span class="badge-pending">Pending</span>
+        {% elif booking.status == 'cancelled' %}
+          <span class="badge-cancelled">Cancelled</span>
+        {% endif %}
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background: #131c2e;">
+            <div class="text-secondary small fw-bold">EVENT</div>
+            <div class="text-white fw-bold">{{ booking.event.title }}</div>
+            <div class="text-secondary small">{{ booking.event.event_date|date:"l, M d, Y" }} at {{ booking.event.venue }}</div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background: #131c2e;">
+            <div class="text-secondary small fw-bold">CUSTOMER</div>
+            <div class="text-white fw-bold">{{ booking.user.full_name|default:booking.user.username }}</div>
+            <div class="text-secondary small">{{ booking.user.email }} | {{ booking.user.mobile|default:"No phone" }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tickets Generated -->
+      <h6 class="text-secondary fw-bold text-uppercase small mt-4 mb-3">Issued Tickets & Admission Tokens</h6>
+      <div class="table-responsive">
+        <table class="table table-dark-custom">
+          <thead>
+            <tr>
+              <th>Ticket Code</th>
+              <th>Tier</th>
+              <th>Attendee</th>
+              <th>Gate Check-in</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in booking.tickets.all %}
+              <tr>
+                <td><code>{{ t.ticket_code }}</code></td>
+                <td>{{ t.ticket_type.name }}</td>
+                <td>{{ t.attendee_name }}</td>
+                <td>
+                  {% if t.is_used %}
+                    <span class="badge bg-secondary">Checked In on {{ t.used_at|date:"M d, g:i A" }}</span>
+                  {% else %}
+                    <span class="badge bg-success">Unused / Valid</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-secondary">No tickets issued yet.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Actions & Payment Card -->
+  <div class="col-lg-4">
+    <div class="admin-card mb-4">
+      <h5 class="fw-bold text-white mb-3">Financials</h5>
+      <div class="p-3 rounded-3 mb-3" style="background: #131c2e;">
+        <div class="d-flex justify-content-between text-secondary small mb-1">
+          <span>Tickets Subtotal</span>
+          <span>₹{{ booking.subtotal }}</span>
+        </div>
+        <div class="d-flex justify-content-between text-secondary small mb-1">
+          <span>Convenience Fee</span>
+          <span>₹{{ booking.convenience_fee }}</span>
+        </div>
+        <div class="d-flex justify-content-between text-secondary small mb-1">
+          <span>Taxes (GST)</span>
+          <span>₹{{ booking.tax_amount }}</span>
+        </div>
+        <hr class="border-secondary border-opacity-25 my-2">
+        <div class="d-flex justify-content-between fw-bold text-white fs-5">
+          <span>Total</span>
+          <span class="text-primary">₹{{ booking.total_amount }}</span>
+        </div>
+      </div>
+
+      <div class="d-grid gap-2">
+        {% if booking.status == 'confirmed' %}
+          <a href="{% url 'bookings:download_ticket_pdf' booking_id=booking.booking_id %}" class="btn btn-pill-primary">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Download PDF
+          </a>
+
+          <form action="{% url 'dashboard:booking_cancel' booking_id=booking.booking_id %}" method="POST" onsubmit="return confirm('Cancel this booking and release inventory back to the event?');">
+            {% csrf_token %}
+            <input type="hidden" name="reason" value="Cancelled by admin">
+            <button type="submit" class="btn btn-outline-danger w-100 rounded-pill mt-2">
+              Cancel Booking & Release Seats
+            </button>
+          </form>
+        {% endif %}
+
+        <a href="{% url 'dashboard:bookings_list' %}" class="btn btn-dark border-secondary rounded-pill mt-2">
+          Back to List
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

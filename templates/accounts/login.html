@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - EventHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5">
+        <div class="text-center mb-4">
+          <span class="brand-icon d-inline-block mb-2"><i class="bi bi-ticket-perforated-fill"></i></span>
+          <h3 class="fw-bold" style="color: #0f172a;">Welcome Back</h3>
+          <p class="text-secondary small">Sign in to your EventHub account</p>
+        </div>
+
+        <form method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Email Address</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+              {{ form.email }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between">
+              <label class="form-label small fw-bold text-secondary">Password</label>
+            </div>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"><i class="bi bi-key text-muted"></i></span>
+              {{ form.password }}
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-pill-primary w-100 py-2 fs-6 mb-3">
+            Sign In
+          </button>
+        </form>
+
+        <div class="text-center mt-3 small text-secondary">
+          Don't have an account yet?
+          <a href="{% url 'accounts:register' %}{% if next %}?next={{ next }}{% endif %}" class="fw-bold text-decoration-none" style="color: var(--primary);">
+            Register here
+          </a>
+        </div>
+
+        <div class="mt-4 pt-3 border-top text-center text-muted small">
+          <b>Demo Admin credentials:</b><br/>
+          <code>admin@eventhub.com</code> / <code>admin123</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

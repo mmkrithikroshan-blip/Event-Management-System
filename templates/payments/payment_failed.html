@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Failed - EventHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 text-center">
+        <div class="rounded-circle bg-danger-subtle text-danger d-inline-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 80px; height: 80px; font-size: 2.5rem;">
+          <i class="bi bi-x-circle-fill"></i>
+        </div>
+        <h3 class="fw-bold" style="color: #0f172a;">Payment Incomplete</h3>
+        <p class="text-secondary small mb-4">
+          Your transaction could not be processed or was cancelled. No funds were debited for booking <b>#{{ booking.booking_id }}</b>.
+        </p>
+
+        <div class="d-grid gap-2">
+          <a href="{% url 'payments:initiate' booking_id=booking.booking_id %}" class="btn btn-pill-primary py-2">
+            <i class="bi bi-arrow-repeat me-1"></i> Retry Payment
+          </a>
+          <a href="{% url 'events:event_detail' slug=booking.event.slug %}" class="btn btn-light rounded-pill py-2 text-secondary">
+            Return to Event
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}EventHub - Live the Moment | Book Your Favourite Events{% endblock %}
+
+{% block content %}
+<!-- Hero Section (Matches Mockup) -->
+<section class="hero-section">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">Live the Moment</h1>
+    <p class="hero-subtitle">Book Your Favourite Events</p>
+
+    <!-- Search Bar with Pill Shape -->
+    <form action="{% url 'events:event_list' %}" method="GET" class="search-box-pill">
+      <i class="bi bi-search text-secondary fs-5 me-2"></i>
+      <input type="text" name="q" placeholder="Search events, concerts, conferences, sports..." autocomplete="off">
+      <button type="submit" class="btn-search">Search</button>
+    </form>
+
+    <!-- Popular Category Badges -->
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+      {% for cat in categories %}
+        <a href="{% url 'events:event_list' %}?category={{ cat.slug }}" class="badge rounded-pill text-decoration-none px-3 py-2" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(6px); color: #fff; font-weight: 500; font-size: 0.85rem;">
+          <i class="bi {{ cat.icon }} me-1"></i> {{ cat.name }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Upcoming Events Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="fw-bold mb-1" style="color: #0f172a;">Upcoming Events</h2>
+        <p class="text-muted small mb-0">Discover top trending experiences happening around you</p>
+      </div>
+      <a href="{% url 'events:event_list' %}" class="fw-bold text-decoration-none" style="color: var(--primary);">
+        View All <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Event Cards Grid -->
+    <div class="row g-4">
+      {% for event in upcoming_events %}
+        <div class="col-lg-4 col-md-6">
+          <div class="event-card">
+            <div class="event-card-img-wrap">
+              <img src="{{ event.display_banner }}" alt="{{ event.title }}" class="event-card-img">
+              <span class="category-tag">{{ event.category.name }}</span>
+              <span class="city-tag"><i class="bi bi-geo-alt-fill text-danger"></i> {{ event.city }}</span>
+            </div>
+            
+            <div class="event-card-body">
+              <h3 class="event-card-title">{{ event.title }}</h3>
+              
+              <div class="event-card-meta">
+                <span><i class="bi bi-calendar3 text-primary"></i> {{ event.event_date|date:"M d, Y" }}</span>
+                <span>&bull;</span>
+                <span><i class="bi bi-clock text-secondary"></i> {{ event.start_time|time:"g:i A" }}</span>
+              </div>
+
+              <p class="text-secondary small mb-3 flex-grow-1">
+                {{ event.description|truncatewords:14 }}
+              </p>
+
+              <div class="event-card-footer">
+                <div class="event-card-price">
+                  <span>Starts from</span>
+                  <strong>₹{{ event.min_price|floatformat:0 }}</strong>
+                </div>
+
+                {% if event.is_sold_out %}
+                  <button class="btn btn-secondary rounded-pill px-4 btn-sm" disabled>Sold Out</button>
+                {% else %}
+                  <a href="{% url 'events:event_detail' slug=event.slug %}" class="btn btn-pill-primary btn-sm px-4">
+                    Book Now
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12 text-center py-5">
+          <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+          <h4 class="mt-3 text-secondary">No upcoming events found</h4>
+          <p class="text-muted">Check back soon or explore other categories!</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Key Features & Value Proposition (Matches Mockup bottom bar) -->
+    <div class="features-strip mt-5">
+      <div class="text-center mb-4">
+        <h5 class="fw-bold text-uppercase text-secondary small tracking-wider">⭐ Key Platform Features</h5>
+      </div>
+      <div class="row g-3 text-center">
+        <div class="col-md-2 col-6">
+          <div class="p-2">
+            <div class="feature-pill-icon mx-auto mb-2 text-primary">
+              <i class="bi bi-calendar-event"></i>
+            </div>
+            <div class="fw-bold small text-dark">Event Management</div>
+          </div>
+        </div>
+        <div class="col-md-2 col-6">
+          <div class="p-2">
+            <div class="feature-pill-icon mx-auto mb-2 text-warning">
+              <i class="bi bi-ticket-perforated"></i>
+            </div>
+            <div class="fw-bold small text-dark">Ticket Booking</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="p-2">
+            <div class="feature-pill-icon mx-auto mb-2 text-success">
+              <i class="bi bi-credit-card-2-front"></i>
+            </div>
+            <div class="fw-bold small text-dark">Secure Payments</div>
+            <div class="text-muted" style="font-size: 0.75rem;">Razorpay Verified</div>
+          </div>
+        </div>
+        <div class="col-md-2 col-6">
+          <div class="p-2">
+            <div class="feature-pill-icon mx-auto mb-2 text-info">
+              <i class="bi bi-qr-code-scan"></i>
+            </div>
+            <div class="fw-bold small text-dark">QR Code Validation</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-12">
+          <div class="p-2">
+            <div class="feature-pill-icon mx-auto mb-2 text-purple" style="color: #a855f7;">
+              <i class="bi bi-bar-chart-line"></i>
+            </div>
+            <div class="fw-bold small text-dark">Analytics Reports</div>
+            <div class="text-muted" style="font-size: 0.75rem;">Real-time Insights</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technologies Used Strip (Matches Mockup) -->
+    <div class="card border-0 shadow-sm rounded-4 mt-4" style="background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);">
+      <div class="card-body p-4 text-center">
+        <span class="badge bg-primary px-3 py-2 rounded-pill mb-3">🚀 Technologies Used</span>
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 mt-2">
+          <span class="fw-bold text-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-filetype-py fs-4 text-primary"></i> Python (Django)
+          </span>
+          <span class="fw-bold text-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-filetype-html fs-4 text-danger"></i> HTML5
+          </span>
+          <span class="fw-bold text-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-filetype-css fs-4 text-info"></i> CSS3
+          </span>
+          <span class="fw-bold text-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-filetype-js fs-4 text-warning"></i> JavaScript
+          </span>
+          <span class="fw-bold text-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-database fs-4 text-primary"></i> MySQL
+          </span>
+          <span class="fw-bold text-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-shield-lock-fill fs-4 text-primary"></i> Razorpay
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

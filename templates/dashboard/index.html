@@ -1,0 +1,226 @@
+{% extends 'dashboard/admin_base.html' %}
+
+{% block title %}Dashboard - EventHub Admin{% endblock %}
+{% block header_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Top 3 Stat Cards (Exact match with UI mockup) -->
+<div class="row g-4 mb-4">
+  <!-- Total Events Card -->
+  <div class="col-md-4">
+    <div class="admin-stat-card">
+      <div class="stat-icon-wrap stat-icon-blue">
+        <i class="bi bi-calendar3"></i>
+      </div>
+      <div>
+        <div class="stat-label">Total Events</div>
+        <div class="stat-number">{{ metrics.total_events }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Bookings Card -->
+  <div class="col-md-4">
+    <div class="admin-stat-card">
+      <div class="stat-icon-wrap stat-icon-green">
+        <i class="bi bi-ticket-perforated"></i>
+      </div>
+      <div>
+        <div class="stat-label">Total Bookings</div>
+        <div class="stat-number">{{ metrics.total_bookings|default:"0" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Revenue Card -->
+  <div class="col-md-4">
+    <div class="admin-stat-card">
+      <div class="stat-icon-wrap stat-icon-purple">
+        <i class="bi bi-currency-rupee"></i>
+      </div>
+      <div>
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-number">₹{{ metrics.total_revenue|floatformat:0 }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Two-Column Analytics & Recent Bookings Row (Matches UI Mockup) -->
+<div class="row g-4 mb-4">
+  <!-- Left: Sales Overview Chart -->
+  <div class="col-lg-7">
+    <div class="admin-card h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0 text-white">Sales Overview</h5>
+        <span class="text-secondary small">Jan - Jun (Revenue in ₹)</span>
+      </div>
+      <div style="height: 260px;">
+        <canvas id="salesOverviewChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Recent Bookings Panel (Matches UI Mockup) -->
+  <div class="col-lg-5">
+    <div class="admin-card h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0 text-white">Recent Bookings</h5>
+        <a href="{% url 'dashboard:bookings_list' %}" class="fw-bold text-decoration-none small text-primary">
+          View All &rarr;
+        </a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-dark-custom">
+          <tbody>
+            {% for b in metrics.recent_bookings %}
+              <tr>
+                <td>
+                  <span class="fw-bold text-white">{{ b.booking_id }}</span>
+                  <div class="text-secondary" style="font-size: 0.75rem;">{{ b.event.title|truncatechars:20 }}</div>
+                </td>
+                <td class="text-end fw-bold text-light">
+                  ₹{{ b.total_amount|floatformat:0 }}
+                </td>
+                <td class="text-end">
+                  {% if b.status == 'confirmed' %}
+                    <span class="badge-paid">Paid</span>
+                  {% elif b.status == 'pending' %}
+                    <span class="badge-pending">Pending</span>
+                  {% elif b.status == 'cancelled' %}
+                    <span class="badge-cancelled">Cancelled</span>
+                  {% else %}
+                    <span class="badge bg-secondary">{{ b.status|title }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="3" class="text-center py-4 text-secondary">No bookings yet recorded.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Checklist & Quick Actions (Matches Bottom of Admin Section in Mockup) -->
+<div class="admin-card">
+  <h6 class="text-secondary text-uppercase fw-bold small mb-3">⚡ Quick Actions & Modules</h6>
+  <div class="row g-3">
+    <div class="col-md-4 col-sm-6">
+      <a href="{% url 'dashboard:event_create' %}" class="p-3 rounded-3 d-flex align-items-center gap-3 text-decoration-none" style="background: #131c2e; border: 1px solid #1e293b;">
+        <i class="bi bi-check-circle-fill text-primary fs-4"></i>
+        <div>
+          <div class="fw-bold text-white">Add & Manage Events</div>
+          <div class="text-secondary small">Create, update or archive events</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4 col-sm-6">
+      <a href="{% url 'dashboard:reports' %}" class="p-3 rounded-3 d-flex align-items-center gap-3 text-decoration-none" style="background: #131c2e; border: 1px solid #1e293b;">
+        <i class="bi bi-check-circle-fill text-primary fs-4"></i>
+        <div>
+          <div class="fw-bold text-white">Track Ticket Sales</div>
+          <div class="text-secondary small">Real-time inventory and capacity</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4 col-sm-6">
+      <a href="{% url 'dashboard:bookings_list' %}" class="p-3 rounded-3 d-flex align-items-center gap-3 text-decoration-none" style="background: #131c2e; border: 1px solid #1e293b;">
+        <i class="bi bi-check-circle-fill text-primary fs-4"></i>
+        <div>
+          <div class="fw-bold text-white">Manage Bookings & Users</div>
+          <div class="text-secondary small">Verify reservations & accounts</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4 col-sm-6">
+      <a href="{% url 'dashboard:reports' %}" class="p-3 rounded-3 d-flex align-items-center gap-3 text-decoration-none" style="background: #131c2e; border: 1px solid #1e293b;">
+        <i class="bi bi-check-circle-fill text-primary fs-4"></i>
+        <div>
+          <div class="fw-bold text-white">View Reports</div>
+          <div class="text-secondary small">Analytics and revenue exports</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4 col-sm-6">
+      <a href="{% url 'dashboard:payments_list' %}" class="p-3 rounded-3 d-flex align-items-center gap-3 text-decoration-none" style="background: #131c2e; border: 1px solid #1e293b;">
+        <i class="bi bi-check-circle-fill text-primary fs-4"></i>
+        <div>
+          <div class="fw-bold text-white">Manage Payments</div>
+          <div class="text-secondary small">Razorpay logs and reconcile</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4 col-sm-6">
+      <a href="{% url 'dashboard:qr_scanner' %}" class="p-3 rounded-3 d-flex align-items-center gap-3 text-decoration-none" style="background: #131c2e; border: 1px solid #1e293b;">
+        <i class="bi bi-check-circle-fill text-primary fs-4"></i>
+        <div>
+          <div class="fw-bold text-white">QR Gate Scanner</div>
+          <div class="text-secondary small">Validate e-tickets at entry</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Sales Overview Chart (Matches UI Mockup line graph)
+  const ctx = document.getElementById('salesOverviewChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+  gradient.addColorStop(0, 'rgba(59, 130, 246, 0.45)');
+  gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+  const monthsLabels = {{ metrics.months_labels|safe }};
+  const salesData = {{ metrics.monthly_sales|safe }};
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: monthsLabels,
+      datasets: [{
+        label: 'Monthly Revenue (₹)',
+        data: salesData,
+        borderColor: '#38bdf8',
+        borderWidth: 3,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#38bdf8',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        fill: true,
+        backgroundColor: gradient,
+        tension: 0.35
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255, 255, 255, 0.05)' },
+          ticks: { color: '#94a3b8' }
+        },
+        y: {
+          grid: { color: 'rgba(255, 255, 255, 0.05)' },
+          ticks: {
+            color: '#94a3b8',
+            callback: function(val) {
+              return val >= 1000 ? (val / 1000) + 'k' : val;
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}

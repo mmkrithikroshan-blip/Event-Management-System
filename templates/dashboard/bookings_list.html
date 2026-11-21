@@ -1,0 +1,108 @@
+{% extends 'dashboard/admin_base.html' %}
+
+{% block title %}Manage Bookings - EventHub Admin{% endblock %}
+{% block header_title %}Bookings Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="fw-bold text-white mb-0">Customer Reservations</h4>
+    <p class="text-secondary small mb-0">Search, view, audit and cancel bookings</p>
+  </div>
+</div>
+
+<!-- Search & Filter Card -->
+<div class="admin-card mb-4 p-3">
+  <form method="GET" class="row g-2 align-items-center">
+    <div class="col-md-5">
+      <div class="input-group">
+        <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-search"></i></span>
+        <input type="text" name="q" value="{{ q }}" class="form-control bg-dark border-secondary text-white" placeholder="Search by Booking ID, customer, or event...">
+      </div>
+    </div>
+    <div class="col-md-4">
+      <select name="status" class="form-select bg-dark border-secondary text-white">
+        <option value="">All Statuses</option>
+        <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Paid / Confirmed</option>
+        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+        <option value="refunded" {% if status_filter == 'refunded' %}selected{% endif %}>Refunded</option>
+      </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+      <button type="submit" class="btn btn-primary w-100 rounded-pill">Filter</button>
+      <a href="{% url 'dashboard:bookings_list' %}" class="btn btn-dark border-secondary rounded-pill">Reset</a>
+    </div>
+  </form>
+</div>
+
+<!-- Bookings Table -->
+<div class="admin-card p-0 overflow-hidden">
+  <div class="table-responsive">
+    <table class="table table-dark-custom">
+      <thead>
+        <tr>
+          <th class="ps-4">Booking ID</th>
+          <th>Customer</th>
+          <th>Event</th>
+          <th>Tickets</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th class="text-end pe-4">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bookings %}
+          <tr>
+            <td class="ps-4">
+              <span class="fw-bold text-white">{{ b.booking_id }}</span>
+              <div class="text-secondary small">{{ b.created_at|date:"M d, Y" }}</div>
+            </td>
+            <td>
+              <div class="text-white">{{ b.user.full_name|default:b.user.username }}</div>
+              <div class="text-secondary small">{{ b.user.email }}</div>
+            </td>
+            <td>
+              <div class="text-white">{{ b.event.title|truncatechars:25 }}</div>
+              <div class="text-secondary small">{{ b.event.event_date|date:"M d, Y" }}</div>
+            </td>
+            <td>
+              <span class="badge bg-dark border border-secondary text-light">{{ b.total_tickets }}x</span>
+            </td>
+            <td>
+              <span class="fw-bold text-white">₹{{ b.total_amount|floatformat:0 }}</span>
+            </td>
+            <td>
+              {% if b.status == 'confirmed' %}
+                <span class="badge-paid">Paid</span>
+              {% elif b.status == 'pending' %}
+                <span class="badge-pending">Pending</span>
+              {% elif b.status == 'cancelled' %}
+                <span class="badge-cancelled">Cancelled</span>
+              {% else %}
+                <span class="badge bg-secondary">{{ b.status|title }}</span>
+              {% endif %}
+            </td>
+            <td class="text-end pe-4">
+              <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'dashboard:booking_detail' booking_id=b.booking_id %}" class="btn btn-sm btn-outline-primary rounded-pill">
+                  Details
+                </a>
+                {% if b.status == 'confirmed' %}
+                  <a href="{% url 'bookings:download_ticket_pdf' booking_id=b.booking_id %}" class="btn btn-sm btn-dark border-secondary rounded-pill" title="Download PDF">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                  </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-5 text-secondary">No bookings found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Dashboard - EventHub Admin{% endblock %}</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/style.css">
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="admin-layout">
+
+  <!-- Left Sidebar (Matches UI Mockup) -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-header">
+      <div class="rounded-3 p-2 d-flex align-items-center justify-content-center" style="background: var(--gradient-primary); color: white;">
+        <i class="bi bi-shield-lock-fill fs-5"></i>
+      </div>
+      <div>
+        <div class="admin-logo-text">EventHub <span style="color: #818cf8; font-size: 0.95rem;">Admin</span></div>
+      </div>
+    </div>
+
+    <ul class="admin-menu">
+      <li class="admin-menu-item">
+        <a href="{% url 'dashboard:home' %}" class="admin-menu-link {% if active_menu == 'dashboard' %}active{% endif %}">
+          <i class="bi bi-speedometer2"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="admin-menu-item">
+        <a href="{% url 'dashboard:events_list' %}" class="admin-menu-link {% if active_menu == 'events' %}active{% endif %}">
+          <i class="bi bi-calendar-event"></i>
+          <span>Events</span>
+        </a>
+      </li>
+      <li class="admin-menu-item">
+        <a href="{% url 'dashboard:bookings_list' %}" class="admin-menu-link {% if active_menu == 'bookings' %}active{% endif %}">
+          <i class="bi bi-ticket-perforated"></i>
+          <span>Bookings</span>
+        </a>
+      </li>
+      <li class="admin-menu-item">
+        <a href="{% url 'dashboard:users_list' %}" class="admin-menu-link {% if active_menu == 'users' %}active{% endif %}">
+          <i class="bi bi-people"></i>
+          <span>Users</span>
+        </a>
+      </li>
+      <li class="admin-menu-item">
+        <a href="{% url 'dashboard:payments_list' %}" class="admin-menu-link {% if active_menu == 'payments' %}active{% endif %}">
+          <i class="bi bi-credit-card"></i>
+          <span>Payments</span>
+        </a>
+      </li>
+      <li class="admin-menu-item">
+        <a href="{% url 'dashboard:reports' %}" class="admin-menu-link {% if active_menu == 'reports' %}active{% endif %}">
+          <i class="bi bi-bar-chart-line"></i>
+          <span>Reports</span>
+        </a>
+      </li>
+      <li class="admin-menu-item">
+        <a href="{% url 'dashboard:qr_scanner' %}" class="admin-menu-link {% if active_menu == 'scanner' %}active{% endif %}">
+          <i class="bi bi-qr-code-scan"></i>
+          <span>QR Scanner</span>
+        </a>
+      </li>
+      <li class="admin-menu-item">
+        <a href="{% url 'dashboard:settings' %}" class="admin-menu-link {% if active_menu == 'settings' %}active{% endif %}">
+          <i class="bi bi-gear"></i>
+          <span>Settings</span>
+        </a>
+      </li>
+      <li class="admin-menu-item mt-4">
+        <a href="{% url 'accounts:logout' %}" class="admin-menu-link text-danger">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Logout</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Public Site Link in Sidebar -->
+    <div class="p-3 border-top border-secondary border-opacity-25 mt-auto">
+      <a href="{% url 'events:home' %}" class="btn btn-outline-light w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-2">
+        <i class="bi bi-globe"></i> View Public Site
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="admin-main">
+    <!-- Topbar Header -->
+    <header class="admin-topbar">
+      <div class="d-flex align-items-center gap-3">
+        <h3 class="fw-bold mb-0 text-white">{% block header_title %}Dashboard{% endblock %}</h3>
+      </div>
+
+      <div class="d-flex align-items-center gap-3">
+        <!-- Notification / Quick Status -->
+        <div class="badge rounded-pill bg-dark border border-secondary text-secondary px-3 py-2">
+          <i class="bi bi-circle-fill text-success me-1" style="font-size: 0.5rem;"></i> Live System
+        </div>
+
+        <!-- User Dropdown Pill (Matches Mockup) -->
+        <div class="dropdown">
+          <button class="btn btn-dark border border-secondary rounded-pill px-3 py-1 dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Avatar" class="rounded-circle" style="width: 28px; height: 28px; object-fit: cover;">
+            <span class="text-white small fw-bold">{{ user.full_name|default:"Admin" }}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-secondary mt-2">
+            <li><a class="dropdown-item py-2" href="{% url 'events:home' %}"><i class="bi bi-house me-2"></i> User Portal</a></li>
+            <li><a class="dropdown-item py-2" href="{% url 'accounts:profile' %}"><i class="bi bi-person me-2"></i> Profile</a></li>
+            <li><hr class="dropdown-divider border-secondary"></li>
+            <li><a class="dropdown-item py-2 text-danger" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Flash Messages inside Admin -->
+    <div class="px-4 pt-3">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- Admin Body Content -->
+    <main class="p-4 flex-grow-1">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

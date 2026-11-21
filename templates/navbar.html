@@ -1,0 +1,73 @@
+<nav class="navbar navbar-expand-lg navbar-eventhub sticky-top">
+  <div class="container">
+    <!-- Brand Logo -->
+    <a class="navbar-brand brand-logo" href="{% url 'events:home' %}">
+      <span class="brand-icon"><i class="bi bi-ticket-perforated-fill"></i></span>
+      EventHub
+    </a>
+
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav Items -->
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'events:home' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'event_list' %}active{% endif %}" href="{% url 'events:event_list' %}">Events</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'events:about' %}">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'events:contact' %}">Contact</a>
+        </li>
+      </ul>
+
+      <!-- Right Auth Actions -->
+      <div class="d-flex align-items-center gap-2">
+        {% if user.is_authenticated %}
+          <div class="dropdown">
+            <button class="btn btn-pill-outline dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle"></i>
+              <span>{{ user.full_name|default:user.username }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
+              {% if user.has_admin_access %}
+                <li>
+                  <a class="dropdown-item py-2 text-primary fw-bold" href="{% url 'dashboard:home' %}">
+                    <i class="bi bi-speedometer2 me-2"></i> Admin Dashboard
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+              {% endif %}
+              <li>
+                <a class="dropdown-item py-2" href="{% url 'bookings:my_bookings' %}">
+                  <i class="bi bi-ticket-detailed me-2"></i> My Bookings
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item py-2" href="{% url 'accounts:profile' %}">
+                  <i class="bi bi-gear me-2"></i> Profile Settings
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item py-2 text-danger" href="{% url 'accounts:logout' %}">
+                  <i class="bi bi-box-arrow-right me-2"></i> Logout
+                </a>
+              </li>
+            </ul>
+          </div>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="btn btn-pill-outline">Login</a>
+          <a href="{% url 'accounts:register' %}" class="btn btn-pill-primary">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>

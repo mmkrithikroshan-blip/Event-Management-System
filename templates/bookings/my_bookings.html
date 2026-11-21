@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - EventHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold" style="color: #0f172a;">My Booking History</h2>
+      <p class="text-secondary small mb-0">Track all your past and upcoming event reservations</p>
+    </div>
+    <a href="{% url 'events:event_list' %}" class="btn btn-pill-primary">
+      <i class="bi bi-plus-circle me-1"></i> Book New Event
+    </a>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table align-middle table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Booking ID</th>
+            <th>Event Details</th>
+            <th>Date & Time</th>
+            <th>Tickets</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th class="text-end pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bookings %}
+            <tr>
+              <td class="ps-4">
+                <span class="fw-bold text-dark">#{{ b.booking_id }}</span>
+                <div class="text-muted" style="font-size: 0.75rem;">{{ b.created_at|date:"M d, Y" }}</div>
+              </td>
+              <td>
+                <div class="fw-bold text-dark">{{ b.event.title }}</div>
+                <div class="text-secondary small"><i class="bi bi-geo-alt"></i> {{ b.event.city }}</div>
+              </td>
+              <td>
+                <div class="fw-bold">{{ b.event.event_date|date:"M d, Y" }}</div>
+                <div class="text-muted small">{{ b.event.start_time|time:"g:i A" }}</div>
+              </td>
+              <td>
+                <span class="badge bg-light text-dark border">{{ b.total_tickets }} Ticket(s)</span>
+              </td>
+              <td>
+                <span class="fw-bold text-primary fs-6">₹{{ b.total_amount }}</span>
+              </td>
+              <td>
+                {% if b.status == 'confirmed' %}
+                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">Paid / Confirmed</span>
+                {% elif b.status == 'pending' %}
+                  <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-1">Pending Payment</span>
+                {% elif b.status == 'cancelled' %}
+                  <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1">Cancelled</span>
+                {% elif b.status == 'refunded' %}
+                  <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3 py-1">Refunded</span>
+                {% else %}
+                  <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-1">{{ b.status|title }}</span>
+                {% endif %}
+              </td>
+              <td class="text-end pe-4">
+                <div class="d-flex justify-content-end gap-2">
+                  <a href="{% url 'bookings:booking_detail' booking_id=b.booking_id %}" class="btn btn-sm btn-outline-primary rounded-pill">
+                    Details
+                  </a>
+                  {% if b.status == 'confirmed' %}
+                    <a href="{% url 'bookings:download_ticket_pdf' booking_id=b.booking_id %}" class="btn btn-sm btn-primary rounded-pill" title="Download PDF Ticket">
+                      <i class="bi bi-download"></i> PDF
+                    </a>
+                  {% elif b.status == 'pending' %}
+                    <a href="{% url 'bookings:booking_summary' booking_id=b.booking_id %}" class="btn btn-sm btn-warning rounded-pill">
+                      Pay
+                    </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" class="text-center py-5">
+                <i class="bi bi-ticket-perforated text-muted" style="font-size: 3rem;"></i>
+                <h5 class="text-secondary mt-3">No bookings found</h5>
+                <p class="text-muted small">You haven't made any event reservations yet.</p>
+                <a href="{% url 'events:event_list' %}" class="btn btn-pill-primary mt-2">Explore Upcoming Events</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

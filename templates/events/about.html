@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - EventHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row align-items-center mb-5">
+    <div class="col-lg-6">
+      <span class="badge bg-primary rounded-pill px-3 py-2 mb-2">About EventHub</span>
+      <h1 class="fw-bold mb-3" style="color: #0f172a; font-size: 2.8rem;">Connecting You to Unforgettable Live Experiences</h1>
+      <p class="text-secondary fs-5 mb-4">
+        EventHub is an integrated, next-generation event management and online ticketing architecture engineered for lightning-fast bookings, automated gate verification, and total peace of mind.
+      </p>
+      <div class="d-flex gap-3">
+        <a href="{% url 'events:event_list' %}" class="btn btn-pill-primary px-4 py-2">Discover Events</a>
+        <a href="{% url 'events:contact' %}" class="btn btn-pill-outline px-4 py-2">Contact Team</a>
+      </div>
+    </div>
+    <div class="col-lg-6 mt-4 mt-lg-0">
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=1000&q=80" alt="Concert crowd" class="img-fluid">
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+        <div class="feature-pill-icon mb-3 text-primary"><i class="bi bi-shield-check"></i></div>
+        <h4 class="fw-bold">100% Genuine Tickets</h4>
+        <p class="text-secondary small">
+          Every ticket generated contains a cryptographically unique QR token to eradicate scalping, duplication, or fraud at entry gates.
+        </p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+        <div class="feature-pill-icon mb-3 text-success"><i class="bi bi-lightning-charge-fill"></i></div>
+        <h4 class="fw-bold">Instant Confirmation</h4>
+        <p class="text-secondary small">
+          Enjoy direct bank-grade payment processing with Razorpay supporting UPI, Credit/Debit cards, Net Banking, and digital wallets.
+        </p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+        <div class="feature-pill-icon mb-3 text-info"><i class="bi bi-camera"></i></div>
+        <h4 class="fw-bold">Gate Staff Scanner</h4>
+        <p class="text-secondary small">
+          Event administrators and security gate staff can validate tickets on any smartphone with our high-speed browser-based QR scanner.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

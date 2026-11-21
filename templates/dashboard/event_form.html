@@ -1,0 +1,167 @@
+{% extends 'dashboard/admin_base.html' %}
+
+{% block title %}{% if is_edit %}Edit Event{% else %}Create Event{% endif %} - EventHub Admin{% endblock %}
+{% block header_title %}{% if is_edit %}Edit Event: {{ event.title }}{% else %}Create New Event{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="admin-card">
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <h5 class="fw-bold text-white mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+          1. General Event Details
+        </h5>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-8">
+            <label class="form-label text-secondary small fw-bold">Event Title</label>
+            <input type="text" name="title" value="{{ event.title }}" class="form-control bg-dark border-secondary text-white" required placeholder="e.g. Music Concert 2026 Chennai">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-secondary small fw-bold">Category</label>
+            <select name="category_id" class="form-select bg-dark border-secondary text-white" required>
+              {% for c in categories %}
+                <option value="{{ c.id }}" {% if event.category.id == c.id %}selected{% endif %}>{{ c.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label text-secondary small fw-bold">Description</label>
+            <textarea name="description" rows="4" class="form-control bg-dark border-secondary text-white" required placeholder="Detailed information regarding event agenda, artists, guidelines...">{{ event.description }}</textarea>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">Venue Name / Address</label>
+            <input type="text" name="venue" value="{{ event.venue }}" class="form-control bg-dark border-secondary text-white" required placeholder="e.g. Jawaharlal Nehru Stadium">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">City</label>
+            <input type="text" name="city" value="{{ event.city }}" class="form-control bg-dark border-secondary text-white" required placeholder="e.g. Chennai">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label text-secondary small fw-bold">Event Date</label>
+            <input type="date" name="event_date" value="{{ event.event_date|date:'Y-m-d' }}" class="form-control bg-dark border-secondary text-white" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-secondary small fw-bold">Start Time</label>
+            <input type="time" name="start_time" value="{{ event.start_time|time:'H:i' }}" class="form-control bg-dark border-secondary text-white" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-secondary small fw-bold">End Time (Optional)</label>
+            <input type="time" name="end_time" value="{{ event.end_time|time:'H:i' }}" class="form-control bg-dark border-secondary text-white">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">Organizer Name</label>
+            <input type="text" name="organizer" value="{{ event.organizer }}" class="form-control bg-dark border-secondary text-white" required placeholder="e.g. LiveNation India">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">Publication Status</label>
+            <select name="status" class="form-select bg-dark border-secondary text-white">
+              <option value="published" {% if event.status == 'published' %}selected{% endif %}>Published (Visible to public)</option>
+              <option value="draft" {% if event.status == 'draft' %}selected{% endif %}>Draft (Hidden)</option>
+              <option value="cancelled" {% if event.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+              <option value="completed" {% if event.status == 'completed' %}selected{% endif %}>Completed</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">Banner Image Upload</label>
+            <input type="file" name="banner_image" class="form-control bg-dark border-secondary text-white">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">Or Banner Image URL</label>
+            <input type="url" name="banner_url" value="{{ event.banner_url }}" class="form-control bg-dark border-secondary text-white" placeholder="https://images.unsplash.com/...">
+          </div>
+        </div>
+
+        <h5 class="fw-bold text-white mb-3 border-bottom border-secondary border-opacity-25 pb-2 d-flex justify-content-between align-items-center">
+          <span>2. Ticket Tiers & Capacity</span>
+          <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="addTicketRow()">
+            <i class="bi bi-plus-lg"></i> Add Another Tier
+          </button>
+        </h5>
+
+        <div id="ticketTiersContainer" class="mb-4">
+          {% if event.ticket_types.all %}
+            {% for tt in event.ticket_types.all %}
+              <div class="row g-2 align-items-center mb-2 ticket-row">
+                <input type="hidden" name="ticket_id[]" value="{{ tt.id }}">
+                <div class="col-md-5">
+                  <input type="text" name="ticket_name[]" value="{{ tt.name }}" class="form-control bg-dark border-secondary text-white" placeholder="Tier Name (e.g. General, VIP)">
+                </div>
+                <div class="col-md-3">
+                  <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-secondary">₹</span>
+                    <input type="number" step="0.01" name="ticket_price[]" value="{{ tt.price }}" class="form-control bg-dark border-secondary text-white" placeholder="Price">
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <input type="number" name="ticket_quantity[]" value="{{ tt.total_quantity }}" class="form-control bg-dark border-secondary text-white" placeholder="Total Capacity">
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <!-- Default First Tier -->
+            <div class="row g-2 align-items-center mb-2 ticket-row">
+              <input type="hidden" name="ticket_id[]" value="">
+              <div class="col-md-5">
+                <input type="text" name="ticket_name[]" value="General Admission" class="form-control bg-dark border-secondary text-white" placeholder="Tier Name" required>
+              </div>
+              <div class="col-md-3">
+                <div class="input-group">
+                  <span class="input-group-text bg-dark border-secondary text-secondary">₹</span>
+                  <input type="number" step="0.01" name="ticket_price[]" value="1500" class="form-control bg-dark border-secondary text-white" placeholder="Price" required>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <input type="number" name="ticket_quantity[]" value="500" class="form-control bg-dark border-secondary text-white" placeholder="Total Capacity" required>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-pill-primary px-5 py-2">
+            {% if is_edit %}Save Changes{% else %}Create Event{% endif %}
+          </button>
+          <a href="{% url 'dashboard:events_list' %}" class="btn btn-dark border-secondary rounded-pill px-4">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function addTicketRow() {
+    let container = document.getElementById('ticketTiersContainer');
+    let row = document.createElement('div');
+    row.className = 'row g-2 align-items-center mb-2 ticket-row';
+    row.innerHTML = `
+      <input type="hidden" name="ticket_id[]" value="">
+      <div class="col-md-5">
+        <input type="text" name="ticket_name[]" class="form-control bg-dark border-secondary text-white" placeholder="Tier Name (e.g. VIP Pass)" required>
+      </div>
+      <div class="col-md-3">
+        <div class="input-group">
+          <span class="input-group-text bg-dark border-secondary text-secondary">₹</span>
+          <input type="number" step="0.01" name="ticket_price[]" class="form-control bg-dark border-secondary text-white" placeholder="Price" required>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <input type="number" name="ticket_quantity[]" class="form-control bg-dark border-secondary text-white" placeholder="Capacity" required>
+      </div>
+      <div class="col-md-1">
+        <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.ticket-row').remove()">&times;</button>
+      </div>
+    `;
+    container.appendChild(row);
+  }
+</script>
+{% endblock %}

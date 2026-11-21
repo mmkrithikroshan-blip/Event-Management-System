@@ -1,0 +1,49 @@
+{% extends 'dashboard/admin_base.html' %}
+
+{% block title %}Settings - EventHub Admin{% endblock %}
+{% block header_title %}Platform Settings{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="admin-card">
+      <h5 class="fw-bold text-white mb-3">Global Configuration</h5>
+      <p class="text-secondary small mb-4">Adjust fees, taxes, hold timer duration, and operational support details.</p>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label text-secondary small fw-bold">Platform / Site Name</label>
+          <input type="text" name="site_name" value="EventHub" class="form-control bg-dark border-secondary text-white">
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">Convenience Fee (%)</label>
+            <input type="number" step="0.1" name="convenience_fee_percent" value="2.5" class="form-control bg-dark border-secondary text-white">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">Ticket Hold Duration (Minutes)</label>
+            <input type="number" name="hold_duration_minutes" value="10" class="form-control bg-dark border-secondary text-white">
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">Support Email</label>
+            <input type="email" name="contact_email" value="support@eventhub.com" class="form-control bg-dark border-secondary text-white">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">Support Helpline</label>
+            <input type="text" name="contact_phone" value="+91 98765 43210" class="form-control bg-dark border-secondary text-white">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-pill-primary px-4 py-2">
+          Save System Settings
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
